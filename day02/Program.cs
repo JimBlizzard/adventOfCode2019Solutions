@@ -1,6 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
+
+/*
+    NOTE: This sample code is provided as is.
+          No warranties implied or given. 
+          This stuff is just for fun. 
+          You can laugh if you want to.
+*/
+
 namespace day2
 {
     class Program
