@@ -69,26 +69,42 @@ namespace day03
             // Determine if any point on wire A is also in wire B. 
             // We want to find the smallest (closest) one to the origin (0,0)
             // To do this, loop through wire A's points and see if there's a match in wire B.
-            
-            foreach(KeyValuePair<string, Point> pair in cwc.WireAPoints)
+            int lowestNumSteps = Int32.MaxValue;
+
+            foreach(KeyValuePair<string, Point> pointA  in cwc.WireAPoints)
             {
                 // Exclude point 0,0
-                if (pair.Key != "0,0")
+                if (pointA.Key != "0,0")
                 {
+                    var pointB = cwc.WireBPoints.GetValueOrDefault(pointA.Key);
+
                     // See if wire A key matches any key in Wire B
-                    if (cwc.WireBPoints.ContainsKey(pair.Key))
+                    if (pointB != null) // in a match...
                     {
-                        currentPointDistance = Math.Abs(pair.Value.X) + Math.Abs(pair.Value.Y);
+                        currentPointDistance = Math.Abs(pointA.Value.X) + Math.Abs(pointA.Value.Y);
                         if (currentPointDistance < closestPointDistance)
                         {
+                            Console.WriteLine("\nPoint ({1}, {2})", pointA.Value.X, pointA.Value.Y, pointA.Value.Steps); 
                             closestPointDistance = currentPointDistance;
                         }
+
+                        // we have a crossing wire. find the number of steps for both wires. determine smallest number of steps by
+                        // summing the steps pointA.Value.steps + pointB.steps
+                        var numSteps = pointA.Value.Steps + pointB.Steps;
+
+                        Console.WriteLine("\nSteps: {2}", pointA.Value.X, pointA.Value.Y, numSteps); 
+                        if (numSteps < lowestNumSteps)
+                        {
+                            Console.WriteLine("\nNew Lowest Steps: {2}", pointA.Value.X, pointA.Value.Y, numSteps); 
+                            lowestNumSteps = numSteps;
+                        }
                     }
+
                 }
             }
 
             Console.WriteLine("\nClosest point distance is ****** {0} ******", closestPointDistance);
-
+            Console.WriteLine("\nLowest steps is {0}", lowestNumSteps);
             endTime = DateTime.Now; 
 
             Console.WriteLine("\nStart time: {0}", startTime);
@@ -130,8 +146,9 @@ namespace day03
             
             int currentX = 0;
             int currentY = 0;
+            int steps = 0;
 
-            wirePoints.Add((currentX.ToString() + "," + currentY.ToString()), new Point(currentX,currentY));
+            wirePoints.Add((currentX.ToString() + "," + currentY.ToString()), new Point(currentX,currentY, steps));
 
 
             for (int i = 0; i < wireLengths.Length; i++)
@@ -157,8 +174,9 @@ namespace day03
                         for (int moveNumber = 0; moveNumber < nextPointDistance; moveNumber++)
                         {
                             currentX++;
+                            steps++;
                             // Console.WriteLine("{2} adding point {0}, {1}", currentX, currentY, moveNumber);
-                            addNewKeyToWirePoints(currentX, currentY, ref wirePoints);
+                            addNewKeyToWirePoints(currentX, currentY, steps, ref wirePoints);
                         }
                         break;
 
@@ -167,8 +185,9 @@ namespace day03
                         for (int moveNumber = 0; moveNumber < nextPointDistance; moveNumber++)
                         {
                             currentX--;
+                            steps++;
                             // Console.WriteLine("{2} adding point {0}, {1}", currentX, currentY, moveNumber);
-                            addNewKeyToWirePoints(currentX, currentY, ref wirePoints);
+                            addNewKeyToWirePoints(currentX, currentY, steps, ref wirePoints);
                         }
                         break;
 
@@ -177,7 +196,8 @@ namespace day03
                         for (int moveNumber = 0; moveNumber < nextPointDistance; moveNumber++)
                         {
                             currentY++;
-                            addNewKeyToWirePoints(currentX, currentY, ref wirePoints);
+                            steps++;
+                            addNewKeyToWirePoints(currentX, currentY, steps, ref wirePoints);
                         }
                         break;
                     case "D": 
@@ -185,8 +205,9 @@ namespace day03
                         for (int moveNumber = 0; moveNumber < nextPointDistance; moveNumber++)
                         {
                             currentY--;
+                            steps++;
                             // Console.WriteLine("{2} adding point {0}, {1}", currentX, currentY, moveNumber);
-                            addNewKeyToWirePoints(currentX, currentY, ref wirePoints);
+                            addNewKeyToWirePoints(currentX, currentY, steps, ref wirePoints);
                         }
                         break;
                 }
@@ -197,14 +218,14 @@ namespace day03
 
         }         
 
-        private void addNewKeyToWirePoints(int curX, int curY, ref Dictionary<string, Point> wp)
+        private void addNewKeyToWirePoints(int curX, int curY, int steps, ref Dictionary<string, Point> wp)
         {
             string nk; 
 
             nk = curX.ToString() + "," + curY.ToString();
             if (!wp.ContainsKey(nk))
             {
-                wp.Add((nk), new Point(curX, curY));
+                wp.Add((nk), new Point(curX, curY, steps));
             }
         }       
     }
@@ -213,11 +234,13 @@ namespace day03
     {
         public int X { get;  }
         public int Y { get;  }
+        public int Steps {get; }
 
-        public Point(int x, int y)
+        public Point(int x, int y, int s)
         {
             this.X = x; 
             this.Y = y;
+            this.Steps = s;
         }
     }
 }
