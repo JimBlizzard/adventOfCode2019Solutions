@@ -12,7 +12,23 @@ Other than the range rule, the following are true:
 
 111111 meets these criteria (double 11, never decreases).
 223450 does not meet these criteria (decreasing pair of digits 50).
-123789 does not meet these criteria (no double).
+123789 does not meet these criteria (no double). (Must be at least 1 double)
+
+***
 How many different passwords within the range given in your puzzle input meet these criteria?
+***
 
 Your puzzle input is 123257-647015.
+
+============================================
+
+100 - 200
+111
+112 
+
+1 <= 1 <= 0
+int[] inputStart; // should represent the input as an array (i.e.: 111 -> int[]{1,1,1})
+
+1. in range
+2. at least 1 adjacent duplicate
+3. (n) <= (n+1)
